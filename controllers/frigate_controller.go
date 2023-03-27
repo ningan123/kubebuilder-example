@@ -24,8 +24,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
-	webappv1 "my.domain/api/v1"
 	"golang.org/x/exp/slog"
+	webappv1 "my.domain/api/v1"
 )
 
 // FrigateReconciler reconciles a Frigate object

@@ -32,7 +32,7 @@ type FrigateSpec struct {
 	Foo string `json:"foo,omitempty"`
 
 	FirstName string `json:"firstname"`
-	LastName  string `json:"lastname"`	
+	LastName  string `json:"lastname"`
 }
 
 // FrigateStatus defines the observed state of Frigate
