@@ -1,0 +1,12 @@
+apiVersion: webapp.example.com/v1
+kind: Frigate
+metadata:
+  labels:
+    app.kubernetes.io/name: frigate
+    app.kubernetes.io/instance: frigate-sample
+    app.kubernetes.io/part-of: kubebuilder-example
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: kubebuilder-example
+  name: frigate-sample
+spec:
+  # TODO(user): Add fields here

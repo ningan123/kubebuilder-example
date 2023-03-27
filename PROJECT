@@ -7,4 +7,14 @@ layout:
 - go.kubebuilder.io/v3
 projectName: kubebuilder-example
 repo: my.domain
+resources:
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: example.com
+  group: webapp
+  kind: Frigate
+  path: my.domain/api/v1
+  version: v1
 version: "3"
