@@ -25,6 +25,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	webappv1 "my.domain/api/v1"
+	"golang.org/x/exp/slog"
 )
 
 // FrigateReconciler reconciles a Frigate object
@@ -50,6 +51,22 @@ func (r *FrigateReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 	_ = log.FromContext(ctx)
 
 	// TODO(user): your logic here
+
+	// _ = r.Log.WithValues("apiexamplea", req.NamespacedName)
+
+	// 获取当前的 CR，并打印
+	obj := &webappv1.Frigate{}
+	if err := r.Get(ctx, req.NamespacedName, obj); err != nil {
+		slog.Error("Unable to fetch object", "error", err.Error())
+	} else {
+		slog.Info("Geeting from Kubebuilder to", "firstName", obj.Spec.FirstName, "lastName", obj.Spec.LastName)
+	}
+
+	// 初始化 CR 的 Status 为 Running
+	obj.Status.Status = "Running"
+	if err := r.Status().Update(ctx, obj); err != nil {
+		slog.Error("unable to update status", "error", err.Error())
+	}
 
 	return ctrl.Result{}, nil
 }

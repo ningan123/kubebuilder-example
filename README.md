@@ -30,4 +30,15 @@ GOBIN=/root/kubebuilder-example/bin go install sigs.k8s.io/controller-tools/cmd/
 Next: implement your new API and generate the manifests (e.g. CRDs,CRs) with:
 $ make manifests
 
+
+# make install
+/root/kubebuilder-example/bin/controller-gen rbac:roleName=manager-role crd webhook paths="./..." output:crd:artifacts:config=config/crd/bases
+test -s /root/kubebuilder-example/bin/kustomize || { curl -Ss "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash -s -- 3.8.7 /root/kubebuilder-example/bin; }
+{Version:kustomize/v3.8.7 GitCommit:ad092cc7a91c07fdf63a2e4b7f13fa588a39af4f BuildDate:2020-11-11T23:14:14Z GoOs:linux GoArch:amd64}
+kustomize installed to /root/kubebuilder-example/bin/kustomize
+/root/kubebuilder-example/bin/kustomize build config/crd | kubectl apply -f -
+customresourcedefinition.apiextensions.k8s.io/frigates.webapp.example.com created
+# kubectl get crd |grep frigate
+frigates.webapp.example.com                           2023-03-27T07:25:20Z
+
 ```

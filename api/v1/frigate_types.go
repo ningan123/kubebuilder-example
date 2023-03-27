@@ -30,12 +30,17 @@ type FrigateSpec struct {
 
 	// Foo is an example field of Frigate. Edit frigate_types.go to remove/update
 	Foo string `json:"foo,omitempty"`
+
+	FirstName string `json:"firstname"`
+	LastName  string `json:"lastname"`	
 }
 
 // FrigateStatus defines the observed state of Frigate
 type FrigateStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
+
+	Status string `json:"Status"`
 }
 
 //+kubebuilder:object:root=true
