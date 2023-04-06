@@ -18,13 +18,15 @@ package controllers
 
 import (
 	"context"
+	"strings"
+	"time"
 
+	"golang.org/x/exp/slog"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
-	"golang.org/x/exp/slog"
 	webappv1 "my.domain/api/v1"
 )
 
@@ -52,20 +54,52 @@ func (r *FrigateReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 
 	// TODO(user): your logic here
 
-	// _ = r.Log.WithValues("apiexamplea", req.NamespacedName)
-
-	// 获取当前的 CR，并打印
-	obj := &webappv1.Frigate{}
-	if err := r.Get(ctx, req.NamespacedName, obj); err != nil {
-		slog.Error("Unable to fetch object", "error", err.Error())
-	} else {
-		slog.Info("Geeting from Kubebuilder to", "firstName", obj.Spec.FirstName, "lastName", obj.Spec.LastName)
-	}
-
-	// 初始化 CR 的 Status 为 Running
-	obj.Status.Status = "Running"
-	if err := r.Status().Update(ctx, obj); err != nil {
-		slog.Error("unable to update status", "error", err.Error())
+	var result ctrl.Result
+	obj := webappv1.Frigate{}
+	// retryCount := 10
+RETRY:
+	err := r.Get(ctx, req.NamespacedName, &obj)
+	if err != nil {
+		if client.IgnoreNotFound(err) == nil {
+			// retryCount--
+			// if retryCount >= 0 {
+			// 	goto RETRY
+			// }
+		} else {
+			// if !r.notFound(req.NamespacedName, err) {
+			result.Requeue = true
+			result.RequeueAfter = time.Millisecond * 100
+			return result, err
+		}
+	} else if r.matched(&obj) {
+		// r.NotFound.Delete(req.Namespace + "/" + req.Name)
+		if obj.DeletionTimestamp.IsZero() {
+			// DeletionTimestamp 为空时,为创建或更新事件
+			err := r.createOrUpdateCR(ctx, &obj)
+			if err != nil {
+				if strings.Contains(err.Error(), "Operation cannot be fulfilled") {
+					// time.Sleep(time.Millisecond * 100)
+					goto RETRY
+				} else {
+					result.Requeue = true
+					result.RequeueAfter = time.Second
+				}
+				return result, err
+			}
+		} else {
+			// DeletionTimestamp 不为空时,为删除事件
+			err = r.deleteCR(ctx, &obj)
+			if err != nil {
+				if strings.Contains(err.Error(), "Operation cannot be fulfilled") {
+					// time.Sleep(time.Millisecond * 100)
+					goto RETRY
+				} else {
+					result.Requeue = true
+					result.RequeueAfter = time.Second
+				}
+				return result, err
+			}
+		}
 	}
 
 	return ctrl.Result{}, nil
@@ -76,4 +110,48 @@ func (r *FrigateReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&webappv1.Frigate{}).
 		Complete(r)
+}
+
+// matched 检查是否需要处理
+func (r *FrigateReconciler) matched(obj *webappv1.Frigate) bool {
+
+	return true
+}
+
+// createOrUpdate 检查是否需要处理
+func (r *FrigateReconciler) createOrUpdateCR(ctx context.Context, obj *webappv1.Frigate) error {
+	iNodeKey := obj.Namespace + "/" + obj.Name
+	slog.Info("CreateOrUpdate frigate", "obj", iNodeKey)
+
+		// 检查并填充finalizers
+		fl := false
+		for _, finalizer := range obj.GetFinalizers() {
+			if finalizer == "123456789" {
+				fl = true
+				break
+			}
+		}
+		if !fl {
+			obj.Finalizers = append(obj.Finalizers, "123456789")
+			err := r.Update(ctx, obj)
+			if err != nil {
+				return err
+			}
+			return nil
+		}
+
+	return nil
+}
+
+// delete 检查是否需要处理
+func (r *FrigateReconciler) deleteCR(ctx context.Context, obj *webappv1.Frigate) error {
+	iNodeKey := obj.Namespace + "/" + obj.Name
+	slog.Info("Delete frigate", "obj", iNodeKey)
+
+	obj.SetFinalizers([]string{})
+	err := r.Update(ctx, obj)
+	if err != nil {
+		return err
+	}
+	return nil
 }
