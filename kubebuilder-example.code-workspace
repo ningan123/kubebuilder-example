@@ -1,0 +1,77 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		//"go.formatTool": "goreturns",
+		"go.autocompleteUnimportedPackages": true,
+		"go.toolsGopath": "/root/go",
+
+		"go.gotoSymbol.includeGoroot": true,
+		"go.inferGopath": false,
+		"go.gotoSymbol.includeImports": true,
+		"go.languageServerExperimentalFeatures": {},
+
+		"go.goroot": "/usr/local/go",
+		//"go.gopath": "/root/go",
+		"go.goproxy": "https://goproxy.cn,direct",
+		"go.buildOnSave": "workspace",
+		"go.lintOnSave": "package",
+		"go.vetOnSave": "package",
+		"go.buildTags": "",
+		"go.buildFlags": [],
+		"go.lintFlags": [],
+		"go.vetFlags": [],
+		"go.coverOnSave": false,
+		"go.useCodeSnippetsOnFunctionSuggest": false,
+		"[go]": {
+				"editor.snippetSuggestions": "none",
+				"editor.formatOnSave": true,
+				"editor.codeActionsOnSave": {
+						"source.organizeImports": true
+				},
+		},
+		"[go.mod]": {
+				"editor.snippetSuggestions": "none",
+				"editor.formatOnSave": true,
+				"editor.codeActionsOnSave": {
+						"source.organizeImports": true,
+				},
+		},
+		"gopls": {
+				"usePlaceholders": true, // add parameter placeholders when completing a function
+				"completionDocumentation": true, // for documentation in completion items
+				"staticcheck": false,
+				"completeUnimported": true, // autocomplete unimported packages
+				"deepCompletion": true,     // enable deep completion
+		},
+		"files.eol": "\n", // formatting only supports LF line endings
+		"go.formatOnSave": true,
+		//"go.formatTool": "goreturns",
+		"go.gocodeAutoBuild": false,
+		"go.useLanguageServer": true,
+		// "go.languageServerFlags": [
+		//      "-rpc.trace"
+		// ],
+		//"files.autoSave": "onFocusChange",
+	},
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [		
+			{
+				"name": "run",
+				"type": "go",
+				"request": "launch",
+				"mode": "debug",
+				"program": "${workspaceFolder}/main.go",
+				"args": [
+					// "--kubeconfig",
+					// "/root/.kube/config",
+				],
+				"cwd": "${workspaceFolder}",
+			}
+		]
+	}
+}
